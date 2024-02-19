@@ -47,6 +47,10 @@ namespace sansic{
         //groups divided into 1-3 integers
         inline const std::regex rgb_csv_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*\\)$"};
 
+        inline const char token_start {'('};
+        inline const char token_end {')'};
+        
+
 
 
         std::string get_reset(){
@@ -69,13 +73,12 @@ namespace sansic{
 
 
     inline std::string form(std::string input){
-        bool is_next_fg {true};
 
         for(size_t i {0}; i < input.size(); ++i){
 
-            if(input.at(i) == '('){
+            if(input.at(i) == token_start){
 
-                auto pos = input.find(')',i)+1;
+                auto pos = input.find(token_end,i)+1;
 
                 auto full_token {input.substr(i,pos-i)};
 
