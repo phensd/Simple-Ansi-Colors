@@ -45,11 +45,11 @@ namespace sansic{
 
 
 
-        std::string get_reset(){
+        inline std::string get_reset(){
             return ansi_esc + "0m";
         }
         
-        TOKEN_TYPE get_token_type(const std::string& input){ 
+        inline TOKEN_TYPE get_token_type(const std::string& input){ 
 
             if(std::regex_match(input,rgb_csv_regex)) return TOKEN_TYPE::RGB_COLOR;
 
