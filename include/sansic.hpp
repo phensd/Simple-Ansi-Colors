@@ -6,7 +6,6 @@
 #include <regex>
 #include <iostream>
 
-//public 
 namespace sansic{
 
 
@@ -64,21 +63,20 @@ namespace sansic{
             std::smatch components;
             std::regex_match(full_token,components,rgb_csv_regex);
 
-            std::string reset {get_reset()};
-
             std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
 
             input.replace(index,full_token.size(),replace);
 
-            input += reset;
+            input += get_reset();
 
         }
 
 
 
-    }
+    }//end of private details
 
 
+    //start of public implementation
     inline std::string form(std::string input){
 
         for(size_t i {0}; i < input.size(); ++i){
@@ -92,12 +90,9 @@ namespace sansic{
 
                 if(token_type == TOKEN_TYPE::NONE) continue;
 
-
-                if(token_type == TOKEN_TYPE::RGB_COLOR){
-
-                    do_rgb_normal(full_token,input,i);
-
-                }
+                //TODO: create a combined syntax like
+                //"(B0,0,0,F0,0,0)"
+                if(token_type == TOKEN_TYPE::RGB_COLOR) do_rgb_normal(full_token,input,i);
 
 
             }
