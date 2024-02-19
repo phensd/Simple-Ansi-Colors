@@ -2,7 +2,7 @@
 #define SANSIC_HPP
 #include <string>
 #include <tuple>
-#include <format>
+#include <sstream>
 #include <regex>
 #include <iostream>
 
@@ -21,20 +21,12 @@ namespace sansic{
             NONE
         };
 
-        //TODO: Downgrade this to be compatible with C++17, since most people dont use 20 or above it seems
         auto form_24bit_ansi = [](std::string delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals) -> std::string{
-            std::string output {
+            std::stringstream output;
 
-                std::format("{0}{1};2;{2};{3};{4}m",
-                delim,
-                is_foreground ? 38 : 48,
-                std::get<0>(rgb_vals),
-                std::get<1>(rgb_vals),
-                std::get<2>(rgb_vals)
-                )
-
-            };
-            return output;
+            output << delim << (is_foreground ? 38 : 48) << ";" << "2" <<  ';' << std::get<0>(rgb_vals) << ';' << std::get<1>(rgb_vals)  << ';' << std::get<2>(rgb_vals) << "m";
+            
+            return output.str();
 
         };
 
@@ -79,12 +71,10 @@ namespace sansic{
             if(input.at(i) == token_start){
 
                 auto pos = input.find(token_end,i)+1;
-
                 auto full_token {input.substr(i,pos-i)};
 
-                //std::cout << "Token: " << full_token + '\n';
-
                 auto token_type {get_token_type(full_token)};
+
 
                 if(token_type == TOKEN_TYPE::NONE) continue;
 
