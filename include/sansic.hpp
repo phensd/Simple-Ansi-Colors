@@ -59,6 +59,21 @@ namespace sansic{
 
         }
 
+        inline void do_rgb_normal(const std::string& full_token,std::string& input, int&& index){
+
+            std::smatch components;
+            std::regex_match(full_token,components,rgb_csv_regex);
+
+            std::string reset {get_reset()};
+
+            std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
+
+            input.replace(index,full_token.size(),replace);
+
+            input += reset;
+
+        }
+
 
 
     }
@@ -72,7 +87,6 @@ namespace sansic{
 
                 auto pos = input.find(token_end,i)+1;
                 auto full_token {input.substr(i,pos-i)};
-
                 auto token_type {get_token_type(full_token)};
 
 
@@ -81,17 +95,7 @@ namespace sansic{
 
                 if(token_type == TOKEN_TYPE::RGB_COLOR){
 
-                    std::smatch components;
-                    std::regex_match(full_token,components,rgb_csv_regex);
-
-                    std::string reset {get_reset()};
-
-                    std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
-
-                    input.replace(i,full_token.size(),replace);
-
-                    input += reset;
-
+                    do_rgb_normal(full_token,input,i);
 
                 }
 
