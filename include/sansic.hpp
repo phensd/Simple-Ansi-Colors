@@ -5,6 +5,7 @@
 #include <sstream>
 #include <regex>
 #include <iostream>
+#include <array>
 
 namespace sansic{
 
@@ -15,6 +16,7 @@ namespace sansic{
         
         enum class TOKEN_TYPE{
             RGB_COLOR,
+            RGB_COLOR_COMBINED,
             FG,
             BG,
             NONE
@@ -36,7 +38,11 @@ namespace sansic{
         //regex for csv values
         //example matches: [200,300,200] [300, 200  ,100] [20,10,000]
         //groups divided into 1-3 integers
-        inline const std::regex rgb_csv_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*\\)$"};
+        inline const std::regex rgb_normal_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*\\)$"};
+
+        //same as above, but allows setting both background and foreground at once
+        //ex. (F200,100,200,B200,100,200)
+        inline const std::regex rgb_combined_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(F|B)(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*\\)$"};
 
         inline const char token_start {'('};
         inline const char token_end {')'};
@@ -44,30 +50,50 @@ namespace sansic{
 
 
 
-        inline std::string get_reset(){
+        inline const std::string get_reset(){
             return ansi_esc + "0m";
         }
+
+        inline const std::string get_reset_fg(){
+            return ansi_esc + "39m";
+        }
+
+        inline const std::string get_reset_bg(){
+            return ansi_esc + "49m";
+        }
         
-        inline TOKEN_TYPE get_token_type(const std::string& input){ 
+        
 
-            if(std::regex_match(input,rgb_csv_regex)) return TOKEN_TYPE::RGB_COLOR;
+        inline void do_rgb_normal(std::smatch components, const std::string& full_token,std::string& input, int& index){
 
 
-            //default, shouldnt happen!
-            return TOKEN_TYPE::NONE;
+            std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
+            input.replace(index,full_token.size(),replace);
+            input += get_reset();
+
 
         }
 
-        inline void do_rgb_normal(const std::string& full_token,std::string& input, int&& index){
+        inline void do_rgb_combined(std::smatch components,const std::string& full_token,std::string& input, int& index){
 
-            std::smatch components;
-            std::regex_match(full_token,components,rgb_csv_regex);
+            std::string replace_lhs {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
+            std::string replace_rhs {form_24bit_ansi(ansi_esc,!(components[1] == "F"),std::make_tuple(components[6],components[7],components[8]))};
 
-            std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
-
-            input.replace(index,full_token.size(),replace);
+            input.replace(index,full_token.size(),replace_lhs + replace_rhs);
 
             input += get_reset();
+
+        }
+
+        inline void parse_token(const std::string& full_token,std::string& input, int&& index){ 
+
+
+            std::smatch components{};
+
+            if(std::regex_match(full_token,components,rgb_normal_regex)) do_rgb_normal(components,full_token,input,index);
+            if(std::regex_match(full_token,components,rgb_combined_regex)) do_rgb_combined(components,full_token,input,index);
+
+
 
         }
 
@@ -85,14 +111,11 @@ namespace sansic{
 
                 auto pos = input.find(token_end,i)+1;
                 auto full_token {input.substr(i,pos-i)};
-                auto token_type {get_token_type(full_token)};
 
 
-                if(token_type == TOKEN_TYPE::NONE) continue;
+                parse_token(full_token, input,i);
 
-                //TODO: create a combined syntax like
-                //"(B0,0,0,F0,0,0)"
-                if(token_type == TOKEN_TYPE::RGB_COLOR) do_rgb_normal(full_token,input,i);
+
 
 
             }
