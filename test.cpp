@@ -3,7 +3,7 @@
 
 int main(){
 
-    std::cout << sansic::form("[255,100,200]Meow");
+    std::cout << sansic::form("(BG)(90,20,100) Background text  (FG)(200,100,300) Foreground colour  \n");
 
     return 0;
 }
