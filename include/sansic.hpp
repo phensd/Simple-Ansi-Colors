@@ -13,6 +13,12 @@ namespace sansic{
 
     //private details
     namespace {
+        
+        enum class TOKEN_TYPE{
+            RGB_COLOR,
+            FG,
+            BG
+        };
 
         inline auto form_24bit_ansi = [](std::string delim, bool is_foreground,std::tuple<int,int,int> rgb_vals) -> std::string{
             std::string output {
@@ -38,12 +44,35 @@ namespace sansic{
         std::string get_reset(){
             return ansi_esc + "0m";
         }
+        
+        TOKEN_TYPE get_token_type(const std::string& input){
+            std::cout << input;
+
+
+            return TOKEN_TYPE::RGB_COLOR;
+
+
+
+
+        }
+
+
 
     }
 
 
-    inline std::string test_form(const std::string&& input){
-        return form_24bit_ansi(ansi_esc, true, std::make_tuple(200,100,200)) + input + get_reset();
+    inline std::string form(const std::string&& input){
+        bool is_next_fg {false};
+
+        for(size_t i {0}; i < input.size(); ++i){
+            if(input.at(i) == '['){
+                auto token_type {get_token_type(input.substr(i,input.find(']')+1))};
+            }
+
+        }
+        //return form_24bit_ansi(ansi_esc, true, std::make_tuple(200,100,200)) + input + get_reset();
+
+        return " ";
 
     }
 

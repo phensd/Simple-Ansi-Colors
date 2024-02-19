@@ -3,7 +3,7 @@
 
 int main(){
 
+    std::cout << sansic::form("[255,100,200]Meow");
 
-    std::cout << sansic::test_form("meow \n");
     return 0;
 }
