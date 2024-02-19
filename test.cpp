@@ -3,7 +3,7 @@
 
 int main(){
 
-    std::cout << sansic::form("(BG)(90,20,100) Background text  (FG)(200,100,300) Foreground colour  \n");
+    std::cout << sansic::form("(B90,20,100) Purple background, white text  (B100,100,200)(F200,100,300) Blue ish background, whiteish forergound  \n");
 
     return 0;
 }
