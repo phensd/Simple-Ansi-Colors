@@ -21,7 +21,7 @@ namespace sansic{
             NONE
         };
 
-        auto form_24bit_ansi = [](std::string delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals) -> std::string{
+        inline auto form_24bit_ansi = [](std::string delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals) -> std::string{
             std::stringstream output;
 
             output << delim << (is_foreground ? 38 : 48) << ";" << "2" <<  ';' << std::get<0>(rgb_vals) << ';' << std::get<1>(rgb_vals)  << ';' << std::get<2>(rgb_vals) << "m";
@@ -78,9 +78,12 @@ namespace sansic{
 
                 if(token_type == TOKEN_TYPE::NONE) continue;
 
+
                 if(token_type == TOKEN_TYPE::RGB_COLOR){
+
                     std::smatch components;
                     std::regex_match(full_token,components,rgb_csv_regex);
+
                     std::string reset {get_reset()};
 
                     std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
