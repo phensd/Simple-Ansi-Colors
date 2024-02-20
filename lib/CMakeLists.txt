@@ -6,6 +6,9 @@ add_library(sansic STATIC sansic.cpp)
 
 set_target_properties(sansic PROPERTIES PUBLIC_HEADER "sansic.hpp")
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Weffc++")
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -s")
 
 #https://iamsorush.com/posts/cpp-cmake-config/
 install(TARGETS sansic
