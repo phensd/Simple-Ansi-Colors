@@ -27,6 +27,8 @@
         
     }//end of anon namespace
 
+//internal
+
 
 //makes sure rgb values are no greater than 255, no less than 0.
 std::tuple<int,int,int>& sansic::internal::util::conform_rgb_vals(std::tuple<int,int,int>&& rgb_vals){
@@ -116,9 +118,11 @@ const std::string sansic::internal::get_reset() {
 }
 
 
+//end of internal
 
 
 //public 
+
 std::string sansic::form (std::string input){
 
     for(size_t i {0}; i < input.size(); ++i){
