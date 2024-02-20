@@ -1,5 +1,5 @@
 #include <iostream>
-#include "include/sansic.hpp"
+#include "lib/sansic.hpp"
 
 int main(){
 
