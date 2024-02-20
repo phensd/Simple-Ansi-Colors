@@ -23,7 +23,8 @@
     }//end of anon namespace
 
 
-std::string sansic::internal::form_24bit_ansi(std::string delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals){
+std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals){
+    
     std::stringstream output;
 
     output << delim << (is_foreground ? 38 : 48) << ";" << "2" <<  ';' << std::get<0>(rgb_vals) << ';' << std::get<1>(rgb_vals)  << ';' << std::get<2>(rgb_vals) << "m";
@@ -32,7 +33,7 @@ std::string sansic::internal::form_24bit_ansi(std::string delim, bool is_foregro
 
 }
 
-void sansic::internal::do_rgb_normal(std::smatch components, const std::string& full_token,std::string& input, int& index){
+void sansic::internal::do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index){
 
 
     std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
@@ -42,7 +43,7 @@ void sansic::internal::do_rgb_normal(std::smatch components, const std::string& 
 
 }
 
-void sansic::internal::do_rgb_combined(std::smatch components,const std::string& full_token,std::string& input, int& index){
+void sansic::internal::do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index){
 
     std::string replace_lhs {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
     std::string replace_rhs {form_24bit_ansi(ansi_esc,!(components[1] == "F"),std::make_tuple(components[6],components[7],components[8]))};

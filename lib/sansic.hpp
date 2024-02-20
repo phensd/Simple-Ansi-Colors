@@ -13,11 +13,11 @@ namespace sansic{
     namespace internal {
         
 
-        std::string form_24bit_ansi(std::string delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals);
+        std::string form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals);
 
-        void do_rgb_normal(std::smatch components, const std::string& full_token,std::string& input, int& index);
+        void do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index);
 
-        void do_rgb_combined(std::smatch components,const std::string& full_token,std::string& input, int& index);
+        void do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index);
 
         void parse_token(const std::string& full_token,std::string& input, int&& index); 
 
