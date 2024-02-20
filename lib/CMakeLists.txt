@@ -4,6 +4,9 @@ project(sansic)
 
 add_library(sansic STATIC sansic.cpp)
 
+set_target_properties(sansic PROPERTIES PUBLIC_HEADER "sansic.hpp")
+
+
 #https://iamsorush.com/posts/cpp-cmake-config/
 install(TARGETS sansic
     EXPORT sansicTargets
@@ -11,7 +14,7 @@ install(TARGETS sansic
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include)
+    PUBLIC_HEADER DESTINATION include)
 
 install(EXPORT sansicTargets
     FILE sansicTargets.cmake
@@ -20,7 +23,7 @@ install(EXPORT sansicTargets
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "sanicConfigVersion.cmake"
+    "sansicConfigVersion.cmake"
     VERSION "1.0"
     COMPATIBILITY AnyNewerVersion)
 

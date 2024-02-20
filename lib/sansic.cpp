@@ -24,7 +24,7 @@
 
 
 std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals){
-    
+
     std::stringstream output;
 
     output << delim << (is_foreground ? 38 : 48) << ";" << "2" <<  ';' << std::get<0>(rgb_vals) << ';' << std::get<1>(rgb_vals)  << ';' << std::get<2>(rgb_vals) << "m";
