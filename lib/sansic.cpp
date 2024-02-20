@@ -31,7 +31,7 @@
 
 
 //makes sure rgb values are no greater than 255, no less than 0.
-std::tuple<int,int,int>& sansic::internal::util::conform_rgb_vals(std::tuple<int,int,int>&& rgb_vals){
+std::tuple<int,int,int> sansic::internal::util::conform_rgb_vals(std::tuple<int,int,int>&& rgb_vals){
         auto& r = std::get<0>(rgb_vals);
         auto& g = std::get<1>(rgb_vals);
         auto& b = std::get<2>(rgb_vals);
