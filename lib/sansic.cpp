@@ -3,9 +3,13 @@
     //anon namespace for some things that dont need to be seen elsewhere
     namespace {
 
+        //beginning and end of tokens we parse
         const char token_start {'('};
         const char token_end {')'};
 
+
+        //the beginning of an ANSI escape code
+        //https://en.wikipedia.org/wiki/ANSI_escape_code
         const std::string ansi_esc {"\033["};
 
         //regex for csv values
@@ -23,6 +27,8 @@
     }//end of anon namespace
 
 
+//forms a 24 bit ansi escape code
+//https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit
 std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<std::string,std::string,std::string> rgb_vals){
 
     std::stringstream output;
@@ -33,16 +39,17 @@ std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_
 
 }
 
-void sansic::internal::do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index){
 
+//takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
+void sansic::internal::do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index){
 
     std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
     input.replace(index,full_token.size(),replace);
     input += get_reset();
 
-
 }
 
+//takes syntax such as (F200,300,100,B200,100,200) and creates a 24 bit ansi code out of it
 void sansic::internal::do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index){
 
     std::string replace_lhs {form_24bit_ansi(ansi_esc,components[1] == "F",std::make_tuple(components[2],components[3],components[4]))};
@@ -56,9 +63,10 @@ void sansic::internal::do_rgb_combined(std::smatch& components,const std::string
 
 void sansic::internal::parse_token(const std::string& full_token,std::string& input, int&& index){ 
 
-
+    //regex group output
     std::smatch components{};
 
+    //parse the token passed, if it maxes a regex, do the function associated with that regex with the token
     if(std::regex_match(full_token,components,rgb_normal_regex)) do_rgb_normal(components,full_token,input,index);
     if(std::regex_match(full_token,components,rgb_combined_regex)) do_rgb_combined(components,full_token,input,index);
 
@@ -67,9 +75,9 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
 }
 
 
-
+//creates a string that resets all colors
 const std::string sansic::internal::get_reset() {
-        return ansi_esc + "0m";
+    return ansi_esc + "0m";
 }
 
 
@@ -80,12 +88,17 @@ std::string sansic::form (std::string input){
 
     for(size_t i {0}; i < input.size(); ++i){
 
+        //if the input is the beginning of a token, grab it and parse it
         if(input.at(i) == token_start){
 
+            //the position of the next end-of-token character ')'
             auto pos = input.find(token_end,i)+1;
+
+            //the token extracted from the input
+            //a token starts with '(' and ends in ')'
             auto full_token {input.substr(i,pos-i)};
 
-
+            //parse the token
             sansic::internal::parse_token(full_token, input,i);
 
 
