@@ -16,12 +16,12 @@
         //regex for csv values
         //example matches: [200,300,200] [300, 200  ,100] [20,10,000]
         //groups divided into 1-3 integers
-        const std::regex rgb_normal_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*\\)$"};
+        const std::regex rgb_normal_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
         //same as above, but allows setting both background and foreground at once
         //ex. (F200,100,200,B200,100,200)
-        const std::regex rgb_combined_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(F|B)(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*[,|\\-\\_]\\s*(\\d{1,3})\\s*\\)$"};
+        const std::regex rgb_combined_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
         
@@ -84,7 +84,6 @@ void sansic::internal::do_rgb_normal(std::smatch& components, const std::string&
 //takes syntax such as (F200,300,100,B200,100,200) and creates a 24 bit ansi code out of it
 void sansic::internal::do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index){
 
-
     std::tuple<int,int,int> rgb_vals_lhs {sansic::internal::util::conform_rgb_vals( {std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])} )};
     std::tuple<int,int,int> rgb_vals_rhs {sansic::internal::util::conform_rgb_vals( {std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])} )};
 
@@ -103,7 +102,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
     //regex group output
     std::smatch components{};
 
-    //parse the token passed, if it maxes a regex, do the function associated with that regex with the token
+    //parse the token passed, if it matches a regex, do the function associated with that regex with the token
     if(std::regex_match(full_token,components,rgb_normal_regex)) do_rgb_normal(components,full_token,input,index);
     if(std::regex_match(full_token,components,rgb_combined_regex)) do_rgb_combined(components,full_token,input,index);
 
@@ -139,8 +138,6 @@ std::string sansic::form (std::string input){
 
             //parse the token
             sansic::internal::parse_token(full_token, input,i);
-
-
 
 
         }

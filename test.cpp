@@ -10,6 +10,11 @@ int main(){
 
     std::cout << sansic::form("[Combined 24 bit colour syntax] (F255,0,0,B0,0,255) Very red foreground, background very blue (B0,255,0,F255,0,0) Very green background, very red foreground \n");
     std::cout << sansic::form("[Combined 24 bit colour syntax] [Different delimiters will work] (B255_255|255-F255-119|253) White background - pink foreground \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Different delimiters will work] (B255!255_255~F255,119.253) Should be same as above \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Different delimiters will work] (B255]255[255|F255?119!253) Any non-digit char should work as a delimiter (\\D) \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Different delimiters will work] (B255%255#255@F255@119@253) Any non-digit char should work as a delimiter (\\D) \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Different delimiters will work] (B255%255#255@F255@119@253) Any non-digit char should work as a delimiter (\\D) \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Different delimiters will work] (B255/255~255_F255\119-253) Any non-digit char should work as a delimiter (\\D) \n");
 
     std::cout << "\n";
 
