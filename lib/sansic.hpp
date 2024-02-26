@@ -21,8 +21,10 @@ namespace sansic{
         std::string form_8bit_ansi(const std::string& delim, bool is_foreground,int color_val);
 
         void do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index);
-
         void do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index);
+
+        void do_8bit_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index);
+
 
         void parse_token(const std::string& full_token,std::string& input, int&& index); 
 

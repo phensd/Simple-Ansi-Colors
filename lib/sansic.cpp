@@ -16,12 +16,12 @@
         //regex for csv values
         //example matches: [200,300,200] [300, 200  ,100] [20,10,000]
         //groups divided into 1-3 integers
-        const std::regex rgb_normal_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
+        const std::regex rgb_normal_regex{"\\(\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
         //same as above, but allows setting both background and foreground at once
         //ex. (F200,100,200,B200,100,200)
-        const std::regex rgb_combined_regex{"\\(\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
+        const std::regex rgb_combined_regex{"\\(\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
         
@@ -75,6 +75,23 @@ std::string sansic::internal::form_8bit_ansi(const std::string& delim, bool is_f
     return output.str();
 
 }
+
+
+//takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
+void sansic::internal::do_8bit_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index){
+
+    //the RGB values extracted from the regex components
+    //"conform" makes sure each value is no greater than 255 and no less than 0.
+    // std::tuple<int,int,int> rgb_vals {sansic::internal::util::conform_rgb_vals( {std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])} )};
+
+
+
+    // std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",rgb_vals)};
+    // input.replace(index,full_token.size(),replace);
+    // input += get_reset();
+
+}
+
 
 
 //takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
