@@ -65,6 +65,17 @@ std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_
 
 }
 
+//https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
+std::string sansic::internal::form_8bit_ansi(const std::string& delim, bool is_foreground,int color_val){
+
+    std::stringstream output;
+
+    output << delim << (is_foreground ? 38 : 48) << ";" << "5" <<  ';' << color_val << "m";
+    
+    return output.str();
+
+}
+
 
 //takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
 void sansic::internal::do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index){

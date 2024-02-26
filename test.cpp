@@ -14,7 +14,8 @@ int main(){
     std::cout << sansic::form("[Combined 24 bit colour syntax] [Different delimiters will work] (B255]255[255|F255?119!253) Any non-digit char should work as a delimiter (\\D) \n");
     std::cout << sansic::form("[Combined 24 bit colour syntax] [Different delimiters will work] (B255%255#255@F255@119@253) Any non-digit char should work as a delimiter (\\D) \n");
     std::cout << sansic::form("[Basic 24 bit colour syntax] [Different delimiters will work] (B255%255#255@F255@119@253) Any non-digit char should work as a delimiter (\\D) \n");
-    std::cout << sansic::form("[Basic 24 bit colour syntax] [Different delimiters will work] (B255/255~255_F255\119-253) Any non-digit char should work as a delimiter (\\D) \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Different delimiters will work] (B255/255~255_F255\\119-253) Any non-digit char should work as a delimiter (\\D) \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Different delimiters will work] (B25522551255_F25531192253) (Should not be tokenized) (\\D) \n");
 
     std::cout << "\n";
 
