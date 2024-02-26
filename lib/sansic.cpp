@@ -1,5 +1,6 @@
 #include "sansic.hpp"
 #include <iostream>
+#include <regex>
 
     //anon namespace for some things that dont need to be seen elsewhere
     namespace {
@@ -30,27 +31,7 @@
 //internal
 
 
-// //makes sure rgb values are no greater than 255, no less than 0.
-// std::tuple<int,int,int> sansic::internal::util::conform_rgb_vals(std::tuple<int,int,int>&& rgb_vals){
-//         auto& r = std::get<0>(rgb_vals);
-//         auto& g = std::get<1>(rgb_vals);
-//         auto& b = std::get<2>(rgb_vals);
 
-//         //std::cout << "Before: R" << r << " G" << g << " B" << b << "\n";
-
-//         if(r > 255) r = 255;
-//         if(g > 255) g = 255;
-//         if(b > 255) b = 255;
-
-//         if(r < 0) r = 0;
-//         if(g < 0) g = 0;
-//         if(b < 0) b = 0;
-
-//         //std::cout << "After: R" << r << " G" << g << " B" << b << "\n";
-
-
-//         return rgb_vals;
-//     }
 
 
 //forms a 24 bit ansi escape code
@@ -93,6 +74,10 @@ void sansic::internal::do_8bit_normal(std::smatch& components, const std::string
 }
 
 
+bool sansic::internal::smatch_is_foreground_insensitive(const std::string& smatch){
+    return (smatch == "F" or smatch == "f");
+}
+
 
 //takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
 void sansic::internal::do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index){
@@ -102,8 +87,9 @@ void sansic::internal::do_rgb_normal(std::smatch& components, const std::string&
     std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals{std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])};
 
 
+    bool foreground {sansic::internal::smatch_is_foreground_insensitive(components[1])};
 
-    std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F" or components[1] == "f",rgb_vals)};
+    std::string replace {form_24bit_ansi(ansi_esc,foreground,rgb_vals)};
     input.replace(index,full_token.size(),replace);
     input += get_reset();
 
@@ -116,8 +102,9 @@ void sansic::internal::do_rgb_combined(std::smatch& components,const std::string
     std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals_rhs {std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])};
 
 
-    std::string replace_lhs {form_24bit_ansi(ansi_esc,components[1] == "F" or components[1] == "f",rgb_vals_lhs)};
-    std::string replace_rhs {form_24bit_ansi(ansi_esc,!(components[1] == "F" or components[1] == "f"),rgb_vals_rhs)};
+    bool foreground {sansic::internal::smatch_is_foreground_insensitive(components[1])};
+    std::string replace_lhs {form_24bit_ansi(ansi_esc,foreground,rgb_vals_lhs)};
+    std::string replace_rhs {form_24bit_ansi(ansi_esc,!foreground,rgb_vals_rhs)};
 
     input.replace(index,full_token.size(),replace_lhs + replace_rhs);
 
