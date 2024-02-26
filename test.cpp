@@ -20,17 +20,17 @@ int main(){
 
     std::cout << "\n";
 
-    std::cout << sansic::form("[Basic 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F255,255,255)Foreground 255,255,255 \n");
-    std::cout << sansic::form("[Basic 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F300,300,300)Should be same as above. set as 900,900,900 \n");
-    std::cout << sansic::form("[Basic 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F0,0,0)Foreground 0,0,0. \n");
-    std::cout << sansic::form("[Basic 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F-321,-321,-321)(Shouldnt be tokenized, doesnt fit regex.). \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Values should naturally wrap around](F255,255,255)Foreground 255,255,255 \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Values should naturally wrap around](F300,300,300) 300,300,300 = 44,44,44 \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Values should naturally wrap around](F0,0,0)Foreground 0,0,0. \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Values should naturally wrap around](F-321,-321,-321)(Shouldnt be tokenized, doesnt fit regex.). \n");
 
     std::cout << "\n";
 
-    std::cout << sansic::form("[Combined 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F255,255,255,B255,255,255)Foreground & Background 255,255,255 \n");
-    std::cout << sansic::form("[Combined 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F900,900,900,B900,900,900)Should be same as above. set as F&B set to 900,900,900 \n");
-    std::cout << sansic::form("[Combined 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F0,0,0,B0,0,0)Foreground & Background 0,0,0. \n");
-    std::cout << sansic::form("[Combined 24 bit colour syntax] [Each RGB val should be > 0 and < 256 regardless](F,-321,-321,-321,B-321,-321,-321)(Shouldnt be tokenized, doesnt fit regex.). \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Values should naturally wrap around](F255,255,255,B255,255,255)Foreground & Background 255,255,255 \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Values should naturally wrap around](F900,900,900,B900,900,900) 900,900,900 should be 132,132,132 \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Values should naturally wrap around](F0,0,0,B0,0,0)Foreground & Background 0,0,0. \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Values should naturally wrap around](F,-321,-321,-321,B-321,-321,-321)(Shouldnt be tokenized, doesnt fit regex.). \n");
 
     std::cout << "\n";
 

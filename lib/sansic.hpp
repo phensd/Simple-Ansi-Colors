@@ -1,5 +1,6 @@
 #ifndef SANSIC_HPP
 #define SANSIC_HPP
+#include <cstdint>
 #include <string>
 #include <tuple>
 #include <sstream>
@@ -17,8 +18,8 @@ namespace sansic{
             std::tuple<int,int,int> conform_rgb_vals(std::tuple<int,int,int>&& rgb_vals);
         }
 
-        std::string form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<int,int,int>& rgb_vals);
-        std::string form_8bit_ansi(const std::string& delim, bool is_foreground,int color_val);
+        std::string form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>& rgb_vals);
+        std::string form_8bit_ansi(const std::string& delim, bool is_foreground,std::uint8_t color_val);
 
         void do_rgb_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index);
         void do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index);

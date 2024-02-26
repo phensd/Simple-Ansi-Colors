@@ -30,47 +30,47 @@
 //internal
 
 
-//makes sure rgb values are no greater than 255, no less than 0.
-std::tuple<int,int,int> sansic::internal::util::conform_rgb_vals(std::tuple<int,int,int>&& rgb_vals){
-        auto& r = std::get<0>(rgb_vals);
-        auto& g = std::get<1>(rgb_vals);
-        auto& b = std::get<2>(rgb_vals);
+// //makes sure rgb values are no greater than 255, no less than 0.
+// std::tuple<int,int,int> sansic::internal::util::conform_rgb_vals(std::tuple<int,int,int>&& rgb_vals){
+//         auto& r = std::get<0>(rgb_vals);
+//         auto& g = std::get<1>(rgb_vals);
+//         auto& b = std::get<2>(rgb_vals);
 
-        //std::cout << "Before: R" << r << " G" << g << " B" << b << "\n";
+//         //std::cout << "Before: R" << r << " G" << g << " B" << b << "\n";
 
-        if(r > 255) r = 255;
-        if(g > 255) g = 255;
-        if(b > 255) b = 255;
+//         if(r > 255) r = 255;
+//         if(g > 255) g = 255;
+//         if(b > 255) b = 255;
 
-        if(r < 0) r = 0;
-        if(g < 0) g = 0;
-        if(b < 0) b = 0;
+//         if(r < 0) r = 0;
+//         if(g < 0) g = 0;
+//         if(b < 0) b = 0;
 
-        //std::cout << "After: R" << r << " G" << g << " B" << b << "\n";
+//         //std::cout << "After: R" << r << " G" << g << " B" << b << "\n";
 
 
-        return rgb_vals;
-    }
+//         return rgb_vals;
+//     }
 
 
 //forms a 24 bit ansi escape code
 //https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit
-std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<int,int,int>& rgb_vals){
+std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_foreground,std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>& rgb_vals){
 
     std::stringstream output;
 
-    output << delim << (is_foreground ? 38 : 48) << ";" << "2" <<  ';' << std::get<0>(rgb_vals) << ';' << std::get<1>(rgb_vals)  << ';' << std::get<2>(rgb_vals) << "m";
+    output << delim << (is_foreground ? 38 : 48) << ";" << "2" <<  ';' << static_cast<int>(std::get<0>(rgb_vals)) << ';' << static_cast<int>(std::get<1>(rgb_vals))  << ';' << static_cast<int>(std::get<2>(rgb_vals)) << "m";
     
     return output.str();
 
 }
 
 //https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
-std::string sansic::internal::form_8bit_ansi(const std::string& delim, bool is_foreground,int color_val){
+std::string sansic::internal::form_8bit_ansi(const std::string& delim, bool is_foreground,std::uint8_t color_val){
 
     std::stringstream output;
 
-    output << delim << (is_foreground ? 38 : 48) << ";" << "5" <<  ';' << color_val << "m";
+    output << delim << (is_foreground ? 38 : 48) << ";" << "5" <<  ';' << static_cast<int>(color_val) << "m";
     
     return output.str();
 
@@ -99,7 +99,7 @@ void sansic::internal::do_rgb_normal(std::smatch& components, const std::string&
 
     //the RGB values extracted from the regex components
     //"conform" makes sure each value is no greater than 255 and no less than 0.
-    std::tuple<int,int,int> rgb_vals {sansic::internal::util::conform_rgb_vals( {std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])} )};
+    std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals{std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])};
 
 
 
@@ -112,8 +112,8 @@ void sansic::internal::do_rgb_normal(std::smatch& components, const std::string&
 //takes syntax such as (F200,300,100,B200,100,200) and creates a 24 bit ansi code out of it
 void sansic::internal::do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index){
 
-    std::tuple<int,int,int> rgb_vals_lhs {sansic::internal::util::conform_rgb_vals( {std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])} )};
-    std::tuple<int,int,int> rgb_vals_rhs {sansic::internal::util::conform_rgb_vals( {std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])} )};
+    std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals_lhs { std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])};
+    std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals_rhs {std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])};
 
 
     std::string replace_lhs {form_24bit_ansi(ansi_esc,components[1] == "F" or components[1] == "f",rgb_vals_lhs)};
