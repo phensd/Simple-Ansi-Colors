@@ -103,7 +103,7 @@ void sansic::internal::do_rgb_normal(std::smatch& components, const std::string&
 
 
 
-    std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",rgb_vals)};
+    std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F" or components[1] == "f",rgb_vals)};
     input.replace(index,full_token.size(),replace);
     input += get_reset();
 
@@ -116,8 +116,8 @@ void sansic::internal::do_rgb_combined(std::smatch& components,const std::string
     std::tuple<int,int,int> rgb_vals_rhs {sansic::internal::util::conform_rgb_vals( {std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])} )};
 
 
-    std::string replace_lhs {form_24bit_ansi(ansi_esc,components[1] == "F",rgb_vals_lhs)};
-    std::string replace_rhs {form_24bit_ansi(ansi_esc,!(components[1] == "F"),rgb_vals_rhs)};
+    std::string replace_lhs {form_24bit_ansi(ansi_esc,components[1] == "F" or components[1] == "f",rgb_vals_lhs)};
+    std::string replace_rhs {form_24bit_ansi(ansi_esc,!(components[1] == "F" or components[1] == "f"),rgb_vals_rhs)};
 
     input.replace(index,full_token.size(),replace_lhs + replace_rhs);
 

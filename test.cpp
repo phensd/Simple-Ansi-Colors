@@ -5,6 +5,7 @@ int main(){
 
     std::cout << sansic::form("[Basic 24 bit colour syntax] (F255,0,0) Very red foreground. (B0,0,0)(F0,255,0)Very dark background, very green foreground. \n");
     std::cout << sansic::form("[Basic 24 bit colour syntax] [Different delimiters will work] (F255|0_0) Very red foreground. (B0-0-0)(F0_255|0)Very dark background, very green foreground. \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Lowercase F and B work as well]] (f255|0_0) Very red foreground. (b0-0-0)(f0_255|0)Very dark background, very green foreground. \n");
 
     std::cout << "\n";
 
