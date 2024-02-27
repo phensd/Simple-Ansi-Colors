@@ -82,7 +82,7 @@ find_package(sansic)
 add_executable(your_project some_source_file.cpp)
 
 #Link it with your target
-target_link_libraries(your_project PRIVATE sansic)
+target_link_libraries(your_project PRIVATE sansic::sansic)
 ```
 Or, linked with `g++` as so:
 ```
