@@ -22,7 +22,7 @@
 
         //same as above, but allows setting both background and foreground at once
         //ex. (F200,100,200,B200,100,200)
-        const std::regex rgb_combined_regex{"\\(\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
+        const std::regex rgb_combined_regex{"\\(\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
         
