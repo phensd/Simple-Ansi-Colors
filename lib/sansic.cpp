@@ -26,6 +26,12 @@
         const std::regex rgb_combined_regex{"\\(\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
+        //regex for 8 bit colors ex. (F28)
+        const std::regex r8bit_normal_regex {"\\(\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\)$"};
+
+        //same as above, but with B aswell. ex. (F100,b200)
+        const std::regex r8bit_combined_regex {"\\(\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\D\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\)$"};
+
         
     }//end of anon namespace
 
@@ -59,11 +65,7 @@ std::string sansic::internal::form_8bit_ansi(const std::string& delim, bool is_f
 }
 
 
-//takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
-void sansic::internal::do_8bit(std::smatch& components, const std::string& full_token,std::string& input, int& index,bool combined){
 
-   
-}
 
 
 bool sansic::internal::smatch_is_foreground_insensitive(const std::string& smatch){
@@ -90,8 +92,6 @@ void sansic::internal::do_rgb(std::smatch& components, const std::string& full_t
     opt_tuple_uint8_t rgb_vals_rhs = do_combined ? opt_tuple_uint8_t(std::make_tuple(std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8]))) : std::nullopt;
 
 
-
-
     //ansi code formed from lhs rgb vals
     std::string replace_lhs {form_24bit_ansi(ansi_esc,foreground,rgb_vals_lhs)};
 
@@ -108,6 +108,13 @@ void sansic::internal::do_rgb(std::smatch& components, const std::string& full_t
     //add the reset string onto the end, so any further text is not affected
     input += get_reset();
 
+}
+
+
+//takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
+void sansic::internal::do_8bit(std::smatch& components, const std::string& full_token,std::string& input, int& index,bool combined){
+
+   
 }
 
 
