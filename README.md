@@ -88,3 +88,4 @@ Or, linked with `g++` as so:
 ```
 g++ some_source_file.cpp -lsansic
 ```
+The public header `sansic.hpp` can then be `#include`-d in your source files.
