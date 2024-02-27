@@ -46,10 +46,12 @@ int main(){
     std::cout << sansic::form("[8 bit basic syntax] (F25)Some Text Here  \n");
     std::cout << sansic::form("[8 bit basic syntax] [Various spacings should work]( F 255 )Some Text Here \n");
 
-    std::cout << sansic::form("[Combined 8 bit basic syntax] (F100,B200)Some Text Here \n");
-    std::cout << sansic::form("[Combined 8 bit basic syntax][Various spacings should work] (F 100 ,B 200)Some Text Here \n");
-    std::cout << sansic::form("[Combined 8 bit basic syntax][Different delimiters will work] (F100|B200)Some Text Here \n");
-    std::cout << sansic::form("[Combined 8 bit basic syntax][Different delimiters will work] (F100_B200)Some Text Here \n");
+    std::cout << sansic::form("[Combined 8 bit syntax] (F100,B200)Some Text Here \n");
+    std::cout << sansic::form("[Combined 8 bit syntax][Various spacings should work] (F 100 ,B 200)Some Text Here \n");
+    std::cout << sansic::form("[Combined 8 bit syntax][Different delimiters will work] (F120|B250)Some Text Here \n");
+
+    std::cout << sansic::form("[8 bit basic syntax][Values should naturally wrap around] (F300)300 = 44 \n");
+    std::cout << sansic::form("[Combined 8 bit syntax][Values should naturally wrap around] (F300,B300)300,300 = 44,44 \n");
 
 
     return 0;
