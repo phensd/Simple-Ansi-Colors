@@ -6,6 +6,9 @@
     //anon namespace for some things that dont need to be seen elsewhere
     namespace {
 
+        //this stands for optionaltupleuint8type
+        using otu8t = std::optional<std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>>;
+
         //beginning and end of tokens we parse
         const char token_start {'('};
         const char token_end {')'};
@@ -74,29 +77,20 @@ bool sansic::internal::smatch_is_foreground_insensitive(const std::string& smatc
 
 
 //takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
-void sansic::internal::do_rgb(std::smatch& components, const std::string& full_token,std::string& input, int& index,bool do_combined){
-
-    //checks the first group, which should be the letter F or B, if it is F then we set the foreground color
-    //in the case of a "do_combined=true" call, the opposite of this value is used to make the next half
-    //set the background instead of foreground or vice versa
-    bool foreground {sansic::internal::smatch_is_foreground_insensitive(components[1])};
-
-
-    //the RGB values extracted from the regex components
-
-    //the first half of the rgb values (the only values if "do_combined" is false)
-    std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals_lhs{std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])};
-
-    //the second half, only available if "do_combined" is true.
-    using opt_tuple_uint8_t = std::optional<std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>>;
-    opt_tuple_uint8_t rgb_vals_rhs = do_combined ? opt_tuple_uint8_t(std::make_tuple(std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8]))) : std::nullopt;
-
+void sansic::internal::do_rgb(
+    const std::string& full_token,
+    std::string& input, 
+    int& index,
+    bool is_foreground,
+    std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> components_lhs,
+    std::optional<std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>> components_rhs)
+    {
 
     //ansi code formed from lhs rgb vals
-    std::string replace_lhs {form_24bit_ansi(ansi_esc,foreground,rgb_vals_lhs)};
+    std::string replace_lhs {form_24bit_ansi(ansi_esc,is_foreground,components_lhs)};
 
-    //second half of the ansi code, again only available if "do_combined" is true (in this case I just check if "rgb_vals_rhs" has a value, though.)
-    std::optional<std::string> replace_rhs = rgb_vals_rhs ? std::optional<std::string>(form_24bit_ansi(ansi_esc,!foreground,rgb_vals_rhs.value())) : std::nullopt;
+    //second half of the ansi code. only present if components_rhs != nullopt
+    std::optional<std::string> replace_rhs = components_rhs ? std::optional<std::string>(form_24bit_ansi(ansi_esc,!is_foreground,components_rhs.value())) : std::nullopt;
 
     //we use both lhs and rhs if rhs has a value, otherwise just lhs
     if(replace_rhs){
@@ -112,18 +106,18 @@ void sansic::internal::do_rgb(std::smatch& components, const std::string& full_t
 
 
 //same as above, but only one number per f/b
-void sansic::internal::do_8bit(std::smatch& components, const std::string& full_token,std::string& input, int& index,bool combined){
+void sansic::internal::do_8bit(
+    const std::string& full_token,
+    std::string& input, 
+    int& index,
+    bool is_foreground,
+    std::uint8_t color_value_lhs, 
+    std::optional<std::uint8_t> color_value_rhs)
+    {
 
-    bool foreground {sansic::internal::smatch_is_foreground_insensitive(components[1])};
+    std::string replace_lhs {form_8bit_ansi(ansi_esc,is_foreground,color_value_lhs)};
 
-    std::uint8_t color_val_lhs {static_cast<std::uint8_t>(std::stoi(components[2]))};
-
-    std::optional<std::uint8_t> color_val_rhs = combined ? std::optional<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(components[4]))) : std::nullopt;
-
-
-    std::string replace_lhs {form_8bit_ansi(ansi_esc,foreground,color_val_lhs)};
-
-    std::optional<std::string> replace_rhs = color_val_rhs ? std::optional<std::string>(form_8bit_ansi(ansi_esc,!foreground,color_val_rhs.value())) : std::nullopt;
+    std::optional<std::string> replace_rhs = color_value_rhs ? std::optional<std::string>(form_8bit_ansi(ansi_esc,!is_foreground,color_value_rhs.value())) : std::nullopt;
 
     if(replace_rhs){
         input.replace(index,full_token.size(),replace_lhs + replace_rhs.value());
@@ -143,12 +137,49 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
     std::smatch components{};
 
     //parse the token passed, if it matches a regex, do the function associated with that regex with the token
-    //last boolean determines whether or not to try the "combined" syntax.
-    if(std::regex_match(full_token,components,rgb_normal_regex)) do_rgb(components,full_token,input,index,false);
-    if(std::regex_match(full_token,components,rgb_combined_regex)) do_rgb(components,full_token,input,index,true);
+    //both "do_rgb" and "do_8bit" contain an optional parameter. If that parameter is present, both foreground and background are set in one go.
+    if(std::regex_match(full_token,components,rgb_normal_regex)){
+        do_rgb(
+            full_token,
+            input,
+            index,
+            sansic::internal::smatch_is_foreground_insensitive(components[1]),
+            std::make_tuple(std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])) 
+        );
+    };
 
-    if(std::regex_match(full_token,components,r8bit_normal_regex)) do_8bit(components,full_token,input,index,false);
-    if(std::regex_match(full_token,components,r8bit_combined_regex)) do_8bit(components,full_token,input,index,true);
+    if(std::regex_match(full_token,components,rgb_combined_regex)){
+        do_rgb(
+            full_token,
+            input,
+            index,
+            sansic::internal::smatch_is_foreground_insensitive(components[1]),
+            std::make_tuple(std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])),
+            otu8t(std::make_tuple(std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])))
+        );
+    };
+
+
+    if(std::regex_match(full_token,components,r8bit_normal_regex)) { 
+        do_8bit(
+            full_token,
+            input,
+            index,
+            sansic::internal::smatch_is_foreground_insensitive(components[1]),
+            std::stoi(components[2])
+        ); 
+    }
+
+    if(std::regex_match(full_token,components,r8bit_combined_regex)) { 
+        do_8bit(
+            full_token,
+            input,
+            index,
+            sansic::internal::smatch_is_foreground_insensitive(components[1]),
+            std::stoi(components[2]),
+            std::stoi(components[4])
+        ); 
+    }
 
 
 
