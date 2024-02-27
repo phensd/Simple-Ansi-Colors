@@ -60,18 +60,9 @@ std::string sansic::internal::form_8bit_ansi(const std::string& delim, bool is_f
 
 
 //takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
-void sansic::internal::do_8bit_normal(std::smatch& components, const std::string& full_token,std::string& input, int& index){
+void sansic::internal::do_8bit(std::smatch& components, const std::string& full_token,std::string& input, int& index,bool combined){
 
-    //the RGB values extracted from the regex components
-    //"conform" makes sure each value is no greater than 255 and no less than 0.
-    // std::tuple<int,int,int> rgb_vals {sansic::internal::util::conform_rgb_vals( {std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])} )};
-
-
-
-    // std::string replace {form_24bit_ansi(ansi_esc,components[1] == "F",rgb_vals)};
-    // input.replace(index,full_token.size(),replace);
-    // input += get_reset();
-
+   
 }
 
 
@@ -85,7 +76,7 @@ void sansic::internal::do_rgb(std::smatch& components, const std::string& full_t
 
     //checks the first group, which should be the letter F or B, if it is F then we set the foreground color
     //in the case of a "do_combined=true" call, the opposite of this value is used to make the next half
-    // set the background instead of foreground or vice versa
+    //set the background instead of foreground or vice versa
     bool foreground {sansic::internal::smatch_is_foreground_insensitive(components[1])};
 
 
@@ -113,26 +104,12 @@ void sansic::internal::do_rgb(std::smatch& components, const std::string& full_t
     }else {
         input.replace(index,full_token.size(),replace_lhs);
     }
+
+    //add the reset string onto the end, so any further text is not affected
     input += get_reset();
 
 }
 
-//takes syntax such as (F200,300,100,B200,100,200) and creates a 24 bit ansi code out of it
-// void sansic::internal::do_rgb_combined(std::smatch& components,const std::string& full_token,std::string& input, int& index){
-
-//     std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals_lhs { std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])};
-//     std::tuple<std::uint8_t,std::uint8_t,std::uint8_t> rgb_vals_rhs {std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])};
-
-
-//     bool foreground {sansic::internal::smatch_is_foreground_insensitive(components[1])};
-//     std::string replace_lhs {form_24bit_ansi(ansi_esc,foreground,rgb_vals_lhs)};
-//     std::string replace_rhs {form_24bit_ansi(ansi_esc,!foreground,rgb_vals_rhs)};
-
-//     input.replace(index,full_token.size(),replace_lhs + replace_rhs);
-
-//     input += get_reset();
-
-// }
 
 void sansic::internal::parse_token(const std::string& full_token,std::string& input, int&& index){ 
 
@@ -140,6 +117,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
     std::smatch components{};
 
     //parse the token passed, if it matches a regex, do the function associated with that regex with the token
+    //last boolean determines whether or not to try the "combined" syntax.
     if(std::regex_match(full_token,components,rgb_normal_regex)) do_rgb(components,full_token,input,index,false);
     if(std::regex_match(full_token,components,rgb_combined_regex)) do_rgb(components,full_token,input,index,true);
 
