@@ -111,8 +111,27 @@ void sansic::internal::do_rgb(std::smatch& components, const std::string& full_t
 }
 
 
-//takes syntax such as (F200,300,100) and creates a 24 bit ansi code out of it
+//same as above, but only one number per f/b
 void sansic::internal::do_8bit(std::smatch& components, const std::string& full_token,std::string& input, int& index,bool combined){
+
+    bool foreground {sansic::internal::smatch_is_foreground_insensitive(components[1])};
+
+    std::uint8_t color_val_lhs {static_cast<std::uint8_t>(std::stoi(components[2]))};
+
+    std::optional<std::uint8_t> color_val_rhs = combined ? std::optional<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(components[4]))) : std::nullopt;
+
+
+    std::string replace_lhs {form_8bit_ansi(ansi_esc,foreground,color_val_lhs)};
+
+    std::optional<std::string> replace_rhs = color_val_rhs ? std::optional<std::string>(form_8bit_ansi(ansi_esc,!foreground,color_val_rhs.value())) : std::nullopt;
+
+    if(replace_rhs){
+        input.replace(index,full_token.size(),replace_lhs + replace_rhs.value());
+    }else {
+        input.replace(index,full_token.size(),replace_lhs);
+    }
+
+    input += get_reset();
 
    
 }

@@ -4,7 +4,9 @@
 int main(){
 
     std::cout << sansic::form("[Basic 24 bit colour syntax] (F255,0,0) Very red foreground. (B0,0,0)(F0,255,0)Very dark background, very green foreground. \n");
+    std::cout << sansic::form("[Basic 24 bit colour syntax] [Various spacings should work] ( F 255 , 0  , 0) Very red foreground. (B0 ,0 ,0)(F 0,255, 0)Very dark background, very green foreground. \n");
     std::cout << sansic::form("[Combined 24 bit colour syntax] (F255,0,0,B0,0,255) Very red foreground, background very blue (B0,255,0,F255,0,0) Very green background, very red foreground \n");
+    std::cout << sansic::form("[Combined 24 bit colour syntax] [Various spacings should work] (F 255, 0,0, B 0,0,255) Very red foreground, background very blue ( B 0,255,0,F255, 0,0 ) Very green background, very red foreground \n");
 
 
     std::cout << sansic::form("[Basic 24 bit colour syntax] [Lowercase F and B work as well]] (f255,0,0) Very red foreground. (b0-0-0)(f0_255|0)Very dark background, very green foreground. \n");
@@ -40,6 +42,14 @@ int main(){
     std::cout << sansic::form("[Combined 24 bit colour syntax] [Values should naturally wrap around](F,-321,-321,-321,B-321,-321,-321)(Shouldnt be tokenized, doesnt fit regex.). \n");
 
     std::cout << "\n";
+
+    std::cout << sansic::form("[8 bit basic syntax] (F25) Some Text Here");
+    std::cout << sansic::form("[8 bit basic syntax] [Various spacings should work]( F 255 ) Some Text Here");
+
+    std::cout << sansic::form("[Combined 8 bit basic syntax] (F100,B200) Some Text Here");
+    std::cout << sansic::form("[Combined 8 bit basic syntax][Various spacings should work] (F 100 ,B 200) Some Text Here");
+    std::cout << sansic::form("[Combined 8 bit basic syntax][Different delimiters will work] (F100|B200) Some Text Here");
+    std::cout << sansic::form("[Combined 8 bit basic syntax][Different delimiters will work] (F100_B200) Some Text Here");
 
 
     return 0;
