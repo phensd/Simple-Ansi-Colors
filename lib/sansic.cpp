@@ -18,12 +18,12 @@
         //regex for csv values
         //example matches: [200,300,200] [300, 200  ,100] [20,10,000]
         //groups divided into 1-3 integers
-        const std::regex rgb_normal_regex{"\\(\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
+        const std::regex rgb_normal_regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
         //same as above, but allows setting both background and foreground at once
         //ex. (F200,100,200,B200,100,200)
-        const std::regex rgb_combined_regex{"\\(\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B|f|b)(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
+        const std::regex rgb_combined_regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"};
 
 
         //regex for 8 bit colors ex. (F28)
@@ -146,7 +146,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
     //last boolean determines whether or not to try the "combined" syntax.
     if(std::regex_match(full_token,components,rgb_normal_regex)) do_rgb(components,full_token,input,index,false);
     if(std::regex_match(full_token,components,rgb_combined_regex)) do_rgb(components,full_token,input,index,true);
-    
+
     if(std::regex_match(full_token,components,r8bit_normal_regex)) do_8bit(components,full_token,input,index,false);
     if(std::regex_match(full_token,components,r8bit_combined_regex)) do_8bit(components,full_token,input,index,true);
 
