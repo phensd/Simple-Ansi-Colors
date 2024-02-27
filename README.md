@@ -32,21 +32,21 @@ sansic::form("(B255,255,255) Some text here")
 sansic::form("(F10,30,10,B200,100,200) Some text here")
 
 //Modify foreground color, using *8 bit* colors.
-sansic::form("(F255) Some text here)"
+sansic::form("(F255) Some text here")
 
 //Same as above, but background.
-sansic::form("(B255) Some text here)"
+sansic::form("(B255) Some text here")
 
 //This 8 bit syntax can be combined aswell.
-sansic::form("(B255,F200) Some text here)"
+sansic::form("(B255,F200) Some text here")
 
 //In both forms, 24 bit and 8 bit, the integers will naturally wrap around.
 //Here, it is the same as "300%256".
-sansic::form("(B300,F300) Some text here)"
+sansic::form("(B300,F300) Some text here")
 
 //For both forms, 24 bit and 8 bit, many different delimiters can be used.
-sansic::form("(B100|F200) Some text here)"
-sansic::form("(B255-100_200|F100!200~100) Some text here)"
+sansic::form("(B100|F200) Some text here")
+sansic::form("(B255-100_200|F100!200~100) Some text here")
 ```
 More examples can be seen in [test.cpp](https://github.com/phensd/Simple-Ansi-Colors/blob/main/test.cpp).
 
