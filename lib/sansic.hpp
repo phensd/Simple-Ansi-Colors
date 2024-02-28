@@ -3,8 +3,6 @@
 #include <cstdint>
 #include <string>
 #include <tuple>
-#include <sstream>
-#include <regex>
 #include <optional>
 
 namespace sansic{
@@ -16,7 +14,6 @@ namespace sansic{
 
 
         namespace util{
-            using otu8t = std::optional<std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>>;
 
         }
 

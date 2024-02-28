@@ -6,9 +6,6 @@
     //anon namespace for some things that dont need to be seen elsewhere
     namespace {
 
-        //this stands for optionaltupleuint8type
-        using otu8t = std::optional<std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>>;
-
         //beginning and end of tokens we parse
         const char token_start {'('};
         const char token_end {')'};
