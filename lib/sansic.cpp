@@ -21,7 +21,7 @@
         //example matches: [200,300,200] [300, 200  ,100] [20,10,000]
         //groups divided into 1-3 integers
 
-        const std::array<std::regex,4> regexes {
+        const std::array<const std::regex,4> regexes {
             std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"},  //Rgb
             std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"}, //Rgb combined
             std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\)$"}, //8bit normal
@@ -138,12 +138,26 @@ void sansic::internal::do_8bit(
 
 void sansic::internal::parse_token(const std::string& full_token,std::string& input, int&& index){ 
 
+    //maps regex enum values to their companion function.
+    //the regex enum is converted to an int
+    //then passed as an index to the array 'regexes' in the anon namespace in this source file.
 
-    const static std::map<REGEX_VALUES,std::function<void(std::smatch& components)>> regex_function_map{
+    //"full token" is the token parsed from the input (i.e '(F200,200,200)' is a full token)
+    //"input" is the full string input
+    //"index" is the index of the full part of the token (i.e '(' )
+    //the next parameter checks if the first component of the regex match (either char F or B) is F, to set the next change to be on the foreground.
+    //then, a value is given (for rgb a tuple, for 8bit an std::uint8_t)
+    //this value represents the color to be used in the forming of the ansi escape code
+    //next another value of the same type is given optionally, and, if it exists, it does the opposite of the previous
+    //i.e, if the first value set the foreground, the second will set the background, and vice versa.
+
+
+    //marked static because this should only be defined once 
+    const static std::unordered_map<REGEX_VALUES,std::function<void(std::smatch& components)>> regex_function_map{
 
     {REGEX_VALUES::RGB_NORMAL,        
         [&full_token,&input,&index](std::smatch& components){
-            sansic::internal::do_rgb (
+            sansic::internal::do_rgb(
             full_token,
             input,
             index,
@@ -154,7 +168,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
 
     {REGEX_VALUES::RGB_COMBINED,
         [&full_token,&input,&index](std::smatch& components){
-            sansic::internal::do_rgb (
+            sansic::internal::do_rgb(
             full_token,
             input,
             index,
@@ -191,59 +205,14 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
     //regex group output
     std::smatch components{};
 
+    //iterate through the map, 
+    //check if the regex expression found by subscripting the regexes array matches the token, 
+    //then perform the paired function if so.
     for(auto& [regex_expression_value,mapped_function] : regex_function_map){
         if(std::regex_match(full_token,components,regexes[static_cast<int>(regex_expression_value)])){
             mapped_function(components);
         }
     }
-
-    //parse the token passed, if it matches a regex, do the function associated with that regex with the token
-    //both "do_rgb" and "do_8bit" contain an optional parameter at the end. 
-    //If that parameter is present, both foreground and background are set in one go.
-    // if(std::regex_match(full_token,components,rgb_normal_regex)){
-    //     do_rgb(
-    //         full_token,
-    //         input,
-    //         index,
-    //         sansic::internal::smatch_is_foreground_insensitive(components[1]),
-    //         std::make_tuple(std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])) 
-    //     );
-    // };
-
-    // if(std::regex_match(full_token,components,rgb_combined_regex)){
-    //     do_rgb(
-    //         full_token,
-    //         input,
-    //         index,
-    //         sansic::internal::smatch_is_foreground_insensitive(components[1]),
-    //         std::make_tuple(std::stoi(components[2]),std::stoi(components[3]),std::stoi(components[4])),
-    //         std::optional<std::tuple<std::uint8_t,uint8_t,uint8_t>>(std::make_tuple(std::stoi(components[6]),std::stoi(components[7]),std::stoi(components[8])))
-    //     );
-    // };
-
-
-    // if(std::regex_match(full_token,components,r8bit_normal_regex)) { 
-    //     do_8bit(
-    //         full_token,
-    //         input,
-    //         index,
-    //         sansic::internal::smatch_is_foreground_insensitive(components[1]),
-    //         std::stoi(components[2])
-    //     ); 
-    // }
-
-    // if(std::regex_match(full_token,components,r8bit_combined_regex)) { 
-    //     do_8bit(
-    //         full_token,
-    //         input,
-    //         index,
-    //         sansic::internal::smatch_is_foreground_insensitive(components[1]),
-    //         std::stoi(components[2]),
-    //         std::stoi(components[4])
-    //     ); 
-    // }
-
-
 
 }
 
@@ -252,13 +221,11 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
 const std::string sansic::internal::get_reset() {
     return ansi_esc + "0m";
 }
-
-
 //end of internal
 
 
-//public 
 
+//public 
 std::string sansic::form (std::string input){
 
     for(size_t i {0}; i < input.size(); ++i){
