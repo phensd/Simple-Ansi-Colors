@@ -30,7 +30,7 @@
 
 
 
-        enum REGEX_VALUES{
+        enum class REGEX_VALUES{
             RGB_NORMAL,
             RGB_COMBINED,
             C8BIT_NORMAL,
@@ -90,12 +90,18 @@ void sansic::internal::do_rgb(
     std::optional<std::tuple<std::uint8_t,std::uint8_t,std::uint8_t>> components_rhs)
     {
 
+
     //ansi code formed from lhs rgb vals
     std::string replace_lhs {form_24bit_ansi(ansi_esc,is_foreground,components_lhs)};
 
     //second half of the ansi code. only present if components_rhs != nullopt
     std::optional<std::string> replace_rhs = components_rhs ? std::optional<std::string>(form_24bit_ansi(ansi_esc,!is_foreground,components_rhs.value())) : std::nullopt;
     
+    if(replace_rhs){
+            input.replace(index,full_token.size(),replace_lhs + replace_rhs.value());
+        }else {
+            input.replace(index,full_token.size(),replace_lhs);
+    }
 
     //add the reset string onto the end, so any further text is not affected
     input += get_reset();
@@ -113,6 +119,7 @@ void sansic::internal::do_8bit(
     std::optional<std::uint8_t> color_value_rhs)
     {
 
+    
     std::string replace_lhs {form_8bit_ansi(ansi_esc,is_foreground,color_value_lhs)};
 
     std::optional<std::string> replace_rhs = color_value_rhs ? std::optional<std::string>(form_8bit_ansi(ansi_esc,!is_foreground,color_value_rhs.value())) : std::nullopt;
@@ -132,7 +139,7 @@ void sansic::internal::do_8bit(
 void sansic::internal::parse_token(const std::string& full_token,std::string& input, int&& index){ 
 
 
-    const std::map<REGEX_VALUES,std::function<void(std::smatch& components)>> regex_function_map{
+    const static std::map<REGEX_VALUES,std::function<void(std::smatch& components)>> regex_function_map{
 
     {REGEX_VALUES::RGB_NORMAL,        
             [&full_token,&input,&index](std::smatch& components){
@@ -159,7 +166,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
 
         {REGEX_VALUES::C8BIT_NORMAL,
         [&full_token,&input,&index](std::smatch& components){
-            do_8bit(
+            sansic::internal::do_8bit(
             full_token,
             input,
             index,
@@ -170,7 +177,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
 
         {REGEX_VALUES::C8BIT_COMBINED,
         [&full_token,&input,&index](std::smatch& components){
-            do_8bit(
+            sansic::internal::do_8bit(
             full_token,
             input,
             index,
@@ -185,7 +192,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
     std::smatch components{};
 
     for(auto& [regex_expression_value,mapped_function] : regex_function_map){
-        if(std::regex_match(full_token,components,regexes[regex_expression_value])){
+        if(std::regex_match(full_token,components,regexes[static_cast<int>(regex_expression_value)])){
             mapped_function(components);
         }
     }
