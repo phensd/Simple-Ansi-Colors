@@ -17,19 +17,16 @@
         //https://en.wikipedia.org/wiki/ANSI_escape_code
         const std::string ansi_esc {"\033["};
 
-        //regex for csv values
-        //example matches: [200,300,200] [300, 200  ,100] [20,10,000]
-        //groups divided into 1-3 integers
-
+        //the regexes we will use for matches
         const std::array<const std::regex,4> regexes {
-            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"},  //Rgb
-            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"}, //Rgb combined
-            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\)$"}, //8bit normal
-            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\D\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\)$"} //8bit combined
+            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"}, //RGB_NORMAL
+            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(F|B|f|b)\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\D\\s*(\\d{1,3})\\s*\\)$"}, //RGB_COMBINED
+            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\)$"}, //C8BIT_NORMAL
+            std::regex{"\\(\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\D\\s*(F|B|f|b)\\s*(\\d{0,3})\\s*\\)$"} //C8BIT_COMBINED
         };
 
 
-
+        //this is used to map the indexes of the array to their companion function in parse_token()
         enum class REGEX_VALUES{
             RGB_NORMAL,
             RGB_COMBINED,
@@ -60,6 +57,7 @@ std::string sansic::internal::form_24bit_ansi(const std::string& delim, bool is_
 
 }
 
+//same as above, but 8 bit instead
 //https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
 std::string sansic::internal::form_8bit_ansi(const std::string& delim, bool is_foreground,std::uint8_t color_val){
 
@@ -99,7 +97,7 @@ void sansic::internal::do_rgb(
     
     if(replace_rhs){
             input.replace(index,full_token.size(),replace_lhs + replace_rhs.value());
-        }else {
+    }else{
             input.replace(index,full_token.size(),replace_lhs);
     }
 
