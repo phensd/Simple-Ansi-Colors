@@ -142,7 +142,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
     const static std::map<REGEX_VALUES,std::function<void(std::smatch& components)>> regex_function_map{
 
     {REGEX_VALUES::RGB_NORMAL,        
-            [&full_token,&input,&index](std::smatch& components){
+        [&full_token,&input,&index](std::smatch& components){
             sansic::internal::do_rgb (
             full_token,
             input,
@@ -153,7 +153,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
             }},
 
     {REGEX_VALUES::RGB_COMBINED,
-            [&full_token,&input,&index](std::smatch& components){
+        [&full_token,&input,&index](std::smatch& components){
             sansic::internal::do_rgb (
             full_token,
             input,
@@ -164,7 +164,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
             }},
 
 
-        {REGEX_VALUES::C8BIT_NORMAL,
+    {REGEX_VALUES::C8BIT_NORMAL,
         [&full_token,&input,&index](std::smatch& components){
             sansic::internal::do_8bit(
             full_token,
@@ -175,7 +175,7 @@ void sansic::internal::parse_token(const std::string& full_token,std::string& in
             std::nullopt);
         }},
 
-        {REGEX_VALUES::C8BIT_COMBINED,
+    {REGEX_VALUES::C8BIT_COMBINED,
         [&full_token,&input,&index](std::smatch& components){
             sansic::internal::do_8bit(
             full_token,
